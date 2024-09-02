@@ -1,12 +1,19 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title><%= title %></title>
   </head>
   <body>
-    <h1>Message from <%= message.user %></h1>
-    <p><%= message.text %></p>
-    <p><small>Added on <%= message.added.toLocaleString() %></small></p>
-    <a href="/">Back to message list</a>
+    <h1><%= title %></h1>
+    <div>
+      <strong>User: <%= message.user_name %></strong>
+      <p>Message: <%= message.text %></p>
+      <small>Date: <%= new Date(message.added).toLocaleString() %></small>
+      <form action="/message/<%= message.id %>/delete" method="POST">
+      <button type="submit">Delete Message</button>    
+    </div>
+    <a href="/">Back to messages</a>
   </body>
 </html>

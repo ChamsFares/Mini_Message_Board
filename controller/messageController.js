@@ -1,36 +1,59 @@
-const messages = [
-  {
-    text: "Hi there!",
-    user: "Amando",
-    added: new Date(),
-  },
-  {
-    text: "Hello World!",
-    user: "Charles",
-    added: new Date(),
-  },
-];
-const index = (req, res) => {
-  res.render("index", { title: "Mini Messageboard", messages: messages });
+const db = require("../db/db");
+const index = async (req, res) => {
+  try {
+    const result = await db.query("SELECT * FROM messages ORDER BY added DESC");
+    res.render("index", { title: "Mini Messageboard", messages: result.rows });
+  } catch (err) {
+    console.error(err);
+    res.redirect("/error");
+  }
 };
 const newMessageForm = (req, res) => {
   res.render("form", { title: "New Message" });
 };
 
-const postNewMessage = (req, res) => {
-  const messageText = req.body.text;
-  const messageUser = req.body.user;
-  messages.push({ text: messageText, user: messageUser, added: new Date() });
-  res.redirect("/");
-};
-const getMessageDetails = (req, res) => {
-  const messageId = req.params.id;
-  const message = messages[messageId];
+const postNewMessage = async (req, res) => {
+  const { text, user } = req.body;
 
-  if (message) {
-    res.render("message", { title: "Message Details", message: message });
-  } else {
+  try {
+    await db.query("INSERT INTO messages (text, user_name) VALUES ($1, $2)", [
+      text,
+      user,
+    ]);
     res.redirect("/");
+  } catch (err) {
+    console.error(err);
+    res.redirect("/error");
+  }
+};
+const getMessageDetails = async (req, res) => {
+  const messageId = req.params.id;
+  try {
+    const result = await db.query("SELECT * FROM messages WHERE id = $1", [
+      messageId,
+    ]);
+    const message = result.rows[0];
+
+    if (message) {
+      res.render("message", { title: "Message Details", message: message });
+    } else {
+      res.redirect("/");
+    }
+  } catch (err) {
+    console.error(err);
+    res.redirect("/error");
+  }
+};
+
+const deleteMessage = async (req, res) => {
+  const messageId = req.params.id;
+
+  try {
+    await db.query("DELETE FROM messages WHERE id = $1", [messageId]);
+    res.redirect("/");
+  } catch (err) {
+    console.error(err);
+    res.redirect("/error");
   }
 };
 module.exports = {
@@ -38,4 +61,5 @@ module.exports = {
   postNewMessage,
   newMessageForm,
   getMessageDetails,
+  deleteMessage,
 };

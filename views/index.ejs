@@ -1,23 +1,20 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title><%= title %></title>
   </head>
   <body>
-    <h1>Mini Message Board</h1>
-    <ul>
-      <% messages.forEach((message, i) => { %>
-      <li>
-        <strong><%= message.user %></strong> wrote:
-        <br />
-        <%= message.text %>
-        <br />
-        <small><%= message.added.toLocaleString() %></small>
-        <a href="/message/<%= i %>">open</a>
-      </li>
-
-      <% }) %>
-    </ul>
+    <h1><%= title %></h1>
     <a href="/new">Add a new message</a>
+    <% messages.forEach((message) => { %>
+    <div>
+      <strong><%= message.user_name %></strong>
+      <p><%= message.text %></p>
+      <small><%= new Date(message.added).toLocaleString() %></small>
+      <a href="/message/<%= message.id %>">Open</a>
+    </div>
+    <% }); %>
   </body>
 </html>
